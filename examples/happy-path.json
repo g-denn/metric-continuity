@@ -1,6 +1,7 @@
 {
   "issuer": "Example Systems plc (synthetic)",
   "metric": "Adjusted service margin",
+  "material_authorization": "public_or_user_authorized_non_confidential",
   "source_coverage": "Two dated synthetic issuer releases cover FY2024 and FY2025.",
   "periods": [
     {"period": "FY2024", "publication_date": "2025-02-20", "value": "18.2", "definition": "Service revenue less service delivery costs, excluding restructuring.", "scope": "Consolidated service segment", "adjustments": ["restructuring"], "unit": "percent", "population": "all service customers", "issuer_recast": "No recast stated.", "source": {"url": "https://example.invalid/fy2024", "date": "2025-02-20", "period": "FY2024", "locator": "Non-GAAP table, row 4"}},

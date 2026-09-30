@@ -2,14 +2,15 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Metric continuity evidence ledger",
   "type": "object",
-  "required": ["issuer", "metric", "source_coverage", "periods", "adjustment_delta", "classification", "source_index"],
+  "required": ["issuer", "metric", "material_authorization", "source_coverage", "periods", "adjustment_delta", "classification", "source_index"],
   "properties": {
     "issuer": {"type": "string", "minLength": 1},
     "metric": {"type": "string", "minLength": 1},
+    "material_authorization": {"const": "public_or_user_authorized_non_confidential"},
     "source_coverage": {"type": "string", "minLength": 1},
-    "periods": {"type": "array", "minItems": 2, "items": {"type": "object", "required": ["period", "publication_date", "definition", "scope", "adjustments", "unit", "population", "issuer_recast", "source"], "properties": {"period": {"type": "string"}, "publication_date": {"type": "string", "format": "date"}, "value": {}, "definition": {"type": "string"}, "scope": {"type": "string"}, "adjustments": {"type": "array", "items": {"type": "string"}}, "unit": {"type": "string"}, "population": {"type": "string"}, "issuer_recast": {"type": "string"}, "source": {"type": "object", "required": ["url", "date", "period", "locator"], "properties": {"url": {"type": "string", "minLength": 1}, "date": {"type": "string", "format": "date"}, "period": {"type": "string"}, "locator": {"type": "string", "minLength": 1}}}}}},
-    "adjustment_delta": {"type": "array", "items": {"type": "object", "required": ["from_period", "to_period", "added", "removed", "unknown"]}},
+    "periods": {"type": "array", "minItems": 2, "items": {"type": "object", "required": ["period", "publication_date", "value", "definition", "scope", "adjustments", "unit", "population", "issuer_recast", "source"], "properties": {"period": {"type": "string", "minLength": 1}, "publication_date": {"type": "string", "format": "date"}, "value": {"anyOf": [{"type": "string", "minLength": 1}, {"type": "number"}]}, "definition": {"type": "string", "minLength": 1}, "scope": {"type": "string", "minLength": 1}, "adjustments": {"type": "array", "items": {"type": "string"}}, "unit": {"type": "string", "minLength": 1}, "population": {"type": "string", "minLength": 1}, "issuer_recast": {"type": "string", "minLength": 1}, "source": {"type": "object", "required": ["url", "date", "period", "locator"], "properties": {"url": {"type": "string", "minLength": 1}, "date": {"type": "string", "format": "date"}, "period": {"type": "string", "minLength": 1}, "locator": {"type": "string", "minLength": 1}}}}}},
+    "adjustment_delta": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["from_period", "to_period", "added", "removed", "unknown"], "properties": {"from_period": {"type": "string", "minLength": 1}, "to_period": {"type": "string", "minLength": 1}, "added": {"type": "array", "items": {"type": "string"}}, "removed": {"type": "array", "items": {"type": "string"}}, "unknown": {"type": "array", "items": {"type": "string"}}}}},
     "classification": {"type": "object", "required": ["status", "rationale", "open_questions"], "properties": {"status": {"enum": ["comparable", "comparable_after_issuer_recast", "directional_only", "not_comparable", "unknown"]}, "rationale": {"type": "string", "minLength": 1}, "open_questions": {"type": "array", "items": {"type": "string"}}}},
-    "source_index": {"type": "array", "minItems": 2}
+    "source_index": {"type": "array", "minItems": 2, "items": {"type": "object", "required": ["url", "date", "period", "locator"], "properties": {"url": {"type": "string", "minLength": 1}, "date": {"type": "string", "format": "date"}, "period": {"type": "string", "minLength": 1}, "locator": {"type": "string", "minLength": 1}}}}
   }
 }

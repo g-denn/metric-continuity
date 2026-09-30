@@ -2,6 +2,7 @@
 import json
 import re
 import sys
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -12,22 +13,63 @@ def fail(message):
     print(f"ERROR: {message}")
     raise SystemExit(1)
 
+def nonempty_string(value):
+    return isinstance(value, str) and bool(value.strip())
+
+def real_date(value):
+    if not nonempty_string(value) or not DATE.match(value):
+        return False
+    try:
+        date.fromisoformat(value)
+    except ValueError:
+        return False
+    return True
+
+def string_array(value):
+    return isinstance(value, list) and all(isinstance(item, str) for item in value)
+
 def validate_ledger(data):
+    if not isinstance(data, dict): fail("ledger must be a JSON object")
     for key in ("issuer", "metric", "source_coverage", "periods", "adjustment_delta", "classification", "source_index"):
-        if key not in data or data[key] in ("", None): fail(f"missing required field: {key}")
-    if not isinstance(data["periods"], list) or len(data["periods"]) < 2: fail("at least two usable periods are required")
+        if key not in data or data[key] in ("", None): fail(f"Research incomplete: missing required field: {key}")
+    if not nonempty_string(data["issuer"]): fail("Research incomplete: issuer identity is required")
+    if not nonempty_string(data["metric"]): fail("Research incomplete: metric is required")
+    if data.get("material_authorization") != "public_or_user_authorized_non_confidential": fail("Research incomplete: public or user-authorized non-confidential material confirmation is required")
+    if not nonempty_string(data["source_coverage"]): fail("Research incomplete: source coverage is required")
+    if not isinstance(data["periods"], list) or len(data["periods"]) < 2: fail("Research incomplete: at least two usable dated sources are required")
     for index, period in enumerate(data["periods"], 1):
+        if not isinstance(period, dict): fail(f"Research incomplete: period {index} must be an object")
         for key in ("period", "publication_date", "definition", "scope", "adjustments", "unit", "population", "issuer_recast", "source"):
-            if key not in period or period[key] in ("", None): fail(f"period {index}: missing required field: {key}")
-        if not DATE.match(period["publication_date"]): fail(f"period {index}: publication_date must be YYYY-MM-DD")
+            if key not in period or period[key] in ("", None): fail(f"Research incomplete: period {index} missing required field: {key}")
+        for key in ("period", "definition", "scope", "unit", "population", "issuer_recast"):
+            if not nonempty_string(period[key]): fail(f"Research incomplete: period {index}: {key} must be a non-empty string")
+        value = period.get("value")
+        if isinstance(value, bool) or not (isinstance(value, (int, float)) or nonempty_string(value)):
+            fail(f"Research incomplete: period {index} missing required field: value")
+        if not real_date(period["publication_date"]): fail(f"Research incomplete: period {index}: publication_date must be a real YYYY-MM-DD date")
+        if not string_array(period["adjustments"]): fail(f"period {index}: adjustments must be an array of strings")
         source = period["source"]
+        if not isinstance(source, dict): fail(f"Research incomplete: period {index}: source must be an object")
         for key in ("url", "date", "period", "locator"):
-            if not source.get(key): fail(f"period {index}: source missing required field: {key}")
-        if not DATE.match(source["date"]): fail(f"period {index}: source date must be YYYY-MM-DD")
+            if not nonempty_string(source.get(key)): fail(f"Research incomplete: period {index}: source missing required field: {key}")
+        if not real_date(source["date"]): fail(f"Research incomplete: period {index}: source date must be a real YYYY-MM-DD date")
+    if not isinstance(data["source_index"], list) or len(data["source_index"]) < 2: fail("Research incomplete: source_index must contain at least two dated sources")
+    for index, source in enumerate(data["source_index"], 1):
+        if not isinstance(source, dict): fail(f"Research incomplete: source_index {index} must be an object")
+        for key in ("url", "date", "period", "locator"):
+            if not nonempty_string(source.get(key)): fail(f"Research incomplete: source_index {index} missing required field: {key}")
+        if not real_date(source["date"]): fail(f"Research incomplete: source_index {index}: date must be a real YYYY-MM-DD date")
+    if not isinstance(data["adjustment_delta"], list) or not data["adjustment_delta"]: fail("adjustment_delta must contain at least one comparison")
+    for index, delta in enumerate(data["adjustment_delta"], 1):
+        if not isinstance(delta, dict): fail(f"adjustment_delta {index} must be an object")
+        if not nonempty_string(delta.get("from_period")) or not nonempty_string(delta.get("to_period")): fail(f"adjustment_delta {index} requires from_period and to_period")
+        for key in ("added", "removed", "unknown"):
+            if not string_array(delta.get(key)): fail(f"adjustment_delta {index}: {key} must be an array of strings")
     classification = data["classification"]
+    if not isinstance(classification, dict): fail("classification must be an object")
     if classification.get("status") not in STATUSES: fail("classification.status is not an allowed continuity status")
-    if not classification.get("rationale"): fail("classification rationale is required")
-    if not isinstance(classification.get("open_questions"), list): fail("classification.open_questions must be an array")
+    if not nonempty_string(classification.get("rationale")): fail("classification rationale must be a non-empty string")
+    if not string_array(classification.get("open_questions")): fail("classification.open_questions must be an array of strings")
 
 def validate_repository():
     skill = ROOT / "skills" / "metric-continuity" / "SKILL.md"

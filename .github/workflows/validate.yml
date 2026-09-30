@@ -10,6 +10,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      # The official quick_validate.py is intentionally run locally. It depends
+      # on PyYAML and this repository keeps CI dependency-free; these checks
+      # cover the repository contract and executable ledger validator instead.
       - run: python scripts/validate.py
       - run: python scripts/validate.py examples/happy-path.json
       - run: python -m unittest discover -s tests -v

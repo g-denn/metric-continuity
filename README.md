@@ -34,3 +34,5 @@ python -m unittest discover -s tests -v
 ```
 
 All examples are synthetic. No service, credentials, or third-party dependency is required.
+
+The official skill quick validator is run locally before release. CI intentionally uses this repository's dependency-free contract validator and tests because the official validator requires PyYAML and is not vendored here.
