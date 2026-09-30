@@ -1,0 +1,5 @@
+{
+  "name": "metric-continuity",
+  "owner": {"name": "G-Den"},
+  "plugins": [{"name": "metric-continuity", "source": "./", "description": "Audit public-company KPI and non-GAAP metric continuity across reporting periods.", "version": "0.1.0", "skills": ["./skills/metric-continuity"]}]
+}

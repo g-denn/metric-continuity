@@ -1,0 +1,4 @@
+interface:
+  display_name: "Metric Continuity"
+  short_description: "Audit KPI comparability across reporting periods"
+  default_prompt: "Use $metric-continuity to compare this public-company metric across the supplied reporting periods, fail closed on unresolved basis changes, and return a source-linked ledger."

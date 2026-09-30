@@ -1,0 +1,12 @@
+{
+  "issuer": "Example Systems plc (synthetic)",
+  "metric": "Adjusted service margin",
+  "source_coverage": "Two dated synthetic issuer releases cover FY2024 and FY2025.",
+  "periods": [
+    {"period": "FY2024", "publication_date": "2025-02-20", "value": "18.2", "definition": "Service revenue less service delivery costs, excluding restructuring.", "scope": "Consolidated service segment", "adjustments": ["restructuring"], "unit": "percent", "population": "all service customers", "issuer_recast": "No recast stated.", "source": {"url": "https://example.invalid/fy2024", "date": "2025-02-20", "period": "FY2024", "locator": "Non-GAAP table, row 4"}},
+    {"period": "FY2025", "publication_date": "2026-02-19", "value": "19.1", "definition": "Service revenue less service delivery costs, excluding restructuring.", "scope": "Consolidated service segment", "adjustments": ["restructuring"], "unit": "percent", "population": "all service customers", "issuer_recast": "No recast needed; definition unchanged.", "source": {"url": "https://example.invalid/fy2025", "date": "2026-02-19", "period": "FY2025", "locator": "Non-GAAP table, row 4"}}
+  ],
+  "adjustment_delta": [{"from_period": "FY2024", "to_period": "FY2025", "added": [], "removed": [], "unknown": []}],
+  "classification": {"status": "comparable", "rationale": "Synthetic disclosures state the same definition, scope, adjustment, unit, and population.", "open_questions": []},
+  "source_index": [{"url": "https://example.invalid/fy2024", "date": "2025-02-20", "period": "FY2024", "locator": "Non-GAAP table, row 4"}, {"url": "https://example.invalid/fy2025", "date": "2026-02-19", "period": "FY2025", "locator": "Non-GAAP table, row 4"}]
+}
